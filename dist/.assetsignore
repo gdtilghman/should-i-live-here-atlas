@@ -1,0 +1,19 @@
+# Local build output that the app never loads; keep it off the host.
+data/normalized.json
+# Whole-family build files. The app loads the per-dataset files in
+# data/layers/ instead; scripts/build-shards.py makes them from these.
+data/air.json
+data/broadband.json
+data/cancer.json
+data/climate.json
+data/community.json
+data/crime.json
+data/disasters.json
+data/employment.json
+data/hazards.json
+data/healthcare.json
+data/places.json
+data/storms.json
+data/traffic.json
+data/water.json
+data/wildfire.json

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0e1a2b">
+    <title>Should I Live Here: county data atlas</title>
+    <link rel="icon" href="data:,">
+    <link rel="preload" href="./vendor/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="./style.css">
+    <script>
+      // Weather Desk is the default look. The Night view button switches to the
+      // dark Night Observatory. Read the saved choice before first paint.
+      (function () {
+        var KEY = "silh.view.v1";
+        var root = document.documentElement;
+        function apply(night) {
+          if (night) delete root.dataset.skin; else root.dataset.skin = "weather";
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.content = night ? "#07111f" : "#0e1a2b";
+          var button = document.getElementById("view-toggle");
+          if (button) button.setAttribute("aria-pressed", String(night));
+          document.dispatchEvent(new Event("silh:viewchange"));
+        }
+        var saved = false;
+        try { saved = localStorage.getItem(KEY) === "night"; } catch (error) {}
+        apply(saved);
+        document.addEventListener("DOMContentLoaded", function () {
+          var button = document.getElementById("view-toggle");
+          apply(root.dataset.skin !== "weather");
+          button.addEventListener("click", function () {
+            var night = root.dataset.skin === "weather";
+            apply(night);
+            try { localStorage.setItem(KEY, night ? "night" : "weather"); } catch (error) {}
+          });
+        });
+      })();
+    </script>
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./composite.js" defer></script>
+    <script src="./geometry-decode.js" defer></script>
+    <script src="./overlay-spatial.js" defer></script>
+    <script src="./overlays.js" defer></script>
+    <script src="./app.js" defer></script>
+    <script src="./terms.js" defer></script>
+    <script src="./sources.js" defer></script>
+  </head>
+  <body data-theme="night">
+    <a class="skip-link" href="#map-heading">Skip to the map</a>
+
+    <main class="atlas-shell">
+      <header class="brand-panel">
+        <div class="brand-copy">
+          <p class="eyebrow">County data atlas · Lower 48</p>
+          <h1>Should I Live Here?</h1>
+          <p class="lede">Compare counties side by side. The values do not tell you where to live.</p>
+        </div>
+        <div class="view-actions">
+          <button class="quiet-button" id="back-button" type="button" disabled aria-label="Go back one geographic level">
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <button class="quiet-button" id="reset-button" type="button">Reset view</button>
+          <button class="quiet-button" id="view-toggle" type="button" aria-pressed="false">Night view</button>
+        </div>
+      </header>
+
+      <aside class="controls-panel" aria-label="Map controls">
+        <div class="control-cluster control-cluster--primary">
+          <label for="data-family">Dataset</label>
+          <select id="data-family" disabled>
+            <option value="cancer">Cancer incidence</option>
+            <option value="disasters">Natural disasters</option>
+            <option value="community">Housing &amp; commute</option>
+            <option value="hazards">Modeled hazards</option>
+            <option value="healthcare">Primary care shortage</option>
+            <option value="employment">Unemployment</option>
+            <option value="broadband">Broadband</option>
+            <option value="places">Adult health</option>
+            <option value="air">Air quality</option>
+            <option value="wildfire">Wildfire</option>
+            <option value="water">Drinking water</option>
+            <option value="traffic">Traffic safety</option>
+            <option value="climate">Climate</option>
+            <option value="storms">Severe storms</option>
+            <option value="crime">Crime</option>
+            <option value="composite">My priorities</option>
+          </select>
+        </div>
+        <p class="source-load-status" id="source-load-status" role="status" hidden></p>
+        <div class="control-cluster control-cluster--measure">
+          <label for="measure-select">Cancer type</label>
+          <select id="measure-select" disabled>
+            <option>Loading verified values…</option>
+          </select>
+        </div>
+        <div class="control-cluster" id="sex-control">
+          <label for="sex-select">Sex</label>
+          <select id="sex-select" disabled>
+            <option>Loading options…</option>
+          </select>
+        </div>
+        <div class="control-cluster" id="cancer-view-control">
+          <label for="cancer-view-select">Display</label>
+          <select id="cancer-view-select">
+            <option value="incidence">Incidence rate</option>
+            <option value="trend">Recent trend</option>
+          </select>
+        </div>
+        <section class="recipe-builder" id="recipe-builder" aria-labelledby="recipe-title" hidden>
+          <div class="recipe-heading">
+            <div>
+              <p class="control-label" id="recipe-title">Combined comparison</p>
+              <p>Choose numeric inputs, weights, and optional hard limits.</p>
+            </div>
+            <span id="recipe-coverage">—</span>
+          </div>
+          <div class="recipe-add">
+            <label for="recipe-add-select">Add an input</label>
+            <select id="recipe-add-select"></select>
+            <button type="button" id="recipe-add-button">Add</button>
+          </div>
+          <div class="recipe-signals" id="recipe-signals"></div>
+          <p class="overlap-warning" id="overlap-warning" role="status" hidden></p>
+          <div class="recipe-actions" role="group" aria-label="Saved priorities">
+            <button type="button" id="recipe-save">Save priorities</button>
+            <button type="button" id="recipe-load">Load saved</button>
+          </div>
+          <p class="recipe-status" id="recipe-status" aria-live="polite"></p>
+        </section>
+        <div class="control-row">
+          <div class="control-cluster">
+            <label for="state-select">State</label>
+            <select id="state-select" disabled>
+              <option value="">All states</option>
+            </select>
+          </div>
+          <div class="control-cluster">
+            <label for="county-select">County</label>
+            <select id="county-select" disabled>
+              <option value="">Choose a state first</option>
+            </select>
+          </div>
+        </div>
+
+        <section id="places-controls" class="places-controls" aria-labelledby="places-title">
+          <h3 id="places-title">Places on the map</h3>
+          <p class="places-caveat">Explore locations over any heatmap. Visual overlap does not establish correlation, causation or exposure. Sources may cover different years; county averages are not individual risk.</p>
+          <p>Related-place labels suggest context only. Markers never change colors or your priorities. Colored dots identify categories; numbered groups combine nearby enabled places. Zoom or tap a group to explore.</p>
+          <div id="places-catalog"></div>
+          <details class="personal-pins" open>
+            <summary>Your personal pins</summary>
+            <p>Saved only in this browser, not synced or shared. Your notes are not verified data and never feed the catalog or scores. Clearing browser data removes them.</p>
+            <label class="places-toggle"><input id="pins-visible" type="checkbox" checked> Show your pins (★)</label>
+            <div class="places-actions"><button id="pin-add" type="button">Add a pin</button><button id="pin-undo" type="button" hidden>Undo last pin deletion</button></div>
+            <p id="pin-mode-status" role="status"></p>
+            <form id="pin-editor" hidden>
+              <label for="pin-label">Label</label><input id="pin-label" required maxlength="100" autocomplete="off">
+              <label for="pin-notes">Notes (optional)</label><textarea id="pin-notes" maxlength="1000" rows="3"></textarea>
+              <label for="pin-latitude">Latitude</label><input id="pin-latitude" type="number" min="-90" max="90" step="any" required>
+              <label for="pin-longitude">Longitude</label><input id="pin-longitude" type="number" min="-180" max="180" step="any" required>
+              <div class="places-actions"><button type="submit">Save pin</button><button id="pin-cancel" type="button">Cancel</button></div>
+            </form>
+          </details>
+          <details class="places-browser">
+            <summary>Browse places and marker details</summary>
+            <label for="places-search">Find a place by name or type</label><input id="places-search" type="search" placeholder="Search enabled places">
+            <p id="places-status" role="status"></p><ul id="places-results"></ul><button id="places-more" type="button" hidden>Show 30 more</button>
+          </details>
+          <section id="place-detail" class="place-detail" aria-label="Selected place" aria-live="polite" hidden></section>
+        </section>
+        <p class="control-hint" id="keyboard-hint">Drag to pan. Pinch with two fingers or scroll over the map to zoom. Page scrolling still works outside the map. Click a county to focus its state.</p>
+      </aside>
+
+      <section class="map-stage" aria-labelledby="map-heading">
+        <div class="map-heading-row">
+          <div>
+            <p class="map-kicker" id="location-kicker">National comparison</p>
+            <h2 id="map-heading">Counties across the lower 48</h2>
+          </div>
+          <div class="coverage-pill" id="coverage-pill" aria-live="polite">Loading map…</div>
+        </div>
+
+          <div class="map-zoom-controls" id="map-zoom-controls" role="group" aria-label="Map view controls">
+            <button type="button" id="zoom-in" aria-label="Zoom in on the national map" disabled>+</button>
+            <button type="button" id="zoom-out" aria-label="Zoom out on the national map" disabled>−</button>
+            <button type="button" id="zoom-reset" aria-label="Reset national map zoom and pan" disabled>Fit</button>
+          </div>
+        <div class="map-frame" id="map-frame">
+          <svg id="county-map" viewBox="0 0 1100 650" preserveAspectRatio="xMidYMin meet" role="img" aria-labelledby="map-title map-desc" aria-describedby="keyboard-hint">
+            <title id="map-title">County color map of the lower 48</title>
+            <desc id="map-desc">Drag with a mouse or one finger to pan the map. Pinch with two fingers to zoom. In a state view, tap empty map space to return to the US view. Use the state and county selectors to use the map with a keyboard.</desc>
+            <defs>
+              <pattern id="missing-pattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <rect width="8" height="8" class="missing-base"></rect>
+                <line x1="0" y1="0" x2="0" y2="8" class="missing-line"></line>
+              </pattern>
+              <pattern id="not-designated-pattern" width="8" height="8" patternUnits="userSpaceOnUse">
+                <rect width="8" height="8" class="not-designated-base"></rect>
+              </pattern>
+              <pattern id="excluded-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
+                <rect width="10" height="10" class="missing-base"></rect>
+                <path d="M0 0L10 10M10 0L0 10" class="excluded-line"></path>
+              </pattern>
+              <filter id="state-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity=".2"></feDropShadow>
+              </filter>
+            </defs>
+            <g class="context-layer" aria-hidden="true"></g>
+            <g class="focus-shadow"><g class="focus-layer"></g></g>
+          </svg>
+          <div class="map-message" id="map-message" role="status" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Loading county boundaries and verified values…</span>
+          </div>
+          <div class="map-tooltip" id="map-tooltip" hidden></div>
+          <div class="layer-loading" id="layer-loading" role="status" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="layer-loading-text">Loading…</span>
+          </div>
+        </div>
+
+        <div class="legend-block" role="region" aria-label="Map legend">
+          <div class="legend-title-row">
+            <div>
+              <span class="legend-label" id="legend-title">Selected measure</span>
+              <span class="legend-meta" id="legend-meta"></span>
+            </div>
+            <span class="legend-period" id="legend-period"></span>
+          </div>
+          <div class="legend-ramp" aria-hidden="true"></div>
+          <div class="legend-ticks" id="legend-ticks"></div>
+          <div class="legend-status-row">
+            <div class="legend-outlier" id="legend-outlier" role="note" hidden>
+              <span class="outlier-swatch" aria-hidden="true"></span>
+              <span id="legend-outlier-text"></span>
+            </div>
+            <div class="legend-missing"><span aria-hidden="true"></span><span id="legend-missing-text">Unavailable or suppressed</span></div>
+            <div class="legend-not-designated" id="legend-not-designated" hidden><span aria-hidden="true"></span><span>Not designated a shortage area</span></div>
+            <div class="legend-excluded" id="legend-excluded" hidden><span aria-hidden="true"></span><span>Excluded by your hard limit</span></div>
+          </div>
+          <p class="scale-explanation" id="scale-explanation"></p>
+          <p class="layer-caveat" id="layer-caveat">These are county values for residents. They are not your personal cancer risk.</p>
+        </div>
+      </section>
+
+      <aside class="fact-panel" id="fact-panel" aria-labelledby="fact-title">
+        <div class="fact-panel__head">
+          <div>
+            <p class="fact-eyebrow" id="fact-eyebrow">County details</p>
+            <h2 id="fact-title">Select a county</h2>
+          </div>
+          <button class="icon-button" id="close-fact" type="button" aria-label="Close county details" hidden>×</button>
+        </div>
+        <div id="fact-body" class="fact-body">
+          <p class="empty-state">Choose a county on the map or from the county list. The map stays at the state level.</p>
+        </div>
+        <div class="source-line">
+          <span id="source-status">Source details load with the map.</span>
+          <a id="source-link" href="#" target="_blank" rel="noreferrer" hidden>View source <span aria-hidden="true">↗</span></a>
+        </div>
+      </aside>
+
+      <section class="data-dock" aria-labelledby="data-dock-title">
+        <div class="dock-summary">
+          <p class="fact-eyebrow">Active measure</p>
+          <h2 id="data-dock-title">Loading values…</h2>
+          <p id="dock-note">The same national scale remains in place when you focus on a state.</p>
+        </div>
+        <div class="dock-stat" aria-live="polite">
+          <span>Viewing</span>
+          <strong id="dock-location">Lower 48</strong>
+        </div>
+        <div class="dock-stat">
+          <span>National scale</span>
+          <strong id="dock-range">—</strong>
+        </div>
+      </section>
+    </main>
+
+    <section class="ranking-report" id="ranking-report" aria-labelledby="ranking-title" hidden>
+      <div class="ranking-report__head">
+        <p class="eyebrow">My priorities · ranked</p>
+        <h2 id="ranking-title">How the top counties compare</h2>
+        <p class="ranking-frame" id="ranking-frame"></p>
+      </div>
+      <div class="ranking-report__body">
+        <div class="ranking-report__main">
+          <div class="ranking-table-wrap">
+            <table>
+              <caption class="visually-hidden" id="ranking-caption">Counties ranked by concern score under your weights</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Rank</th>
+                  <th scope="col">County</th>
+                  <th scope="col">Concern score<span class="th-note">lower is better</span></th>
+                  <th scope="col">What adds to the concern score</th>
+                  <th scope="col">If one weight changes by 20%</th>
+                </tr>
+              </thead>
+              <tbody id="ranking-body"></tbody>
+            </table>
+          </div>
+          <div class="ranking-key" id="ranking-key"></div>
+          <button type="button" class="quiet-button ranking-more" id="ranking-more" hidden>Show 25 more</button>
+        </div>
+        <aside class="ranking-missing" id="ranking-missing" aria-labelledby="ranking-missing-title" tabindex="-1">
+          <h3 id="ranking-missing-title">Not ranked</h3>
+          <p class="ranking-missing__count" id="ranking-missing-count"></p>
+          <div id="ranking-missing-body"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="evidence-section" aria-labelledby="county-list-title">
+      <div class="evidence-copy">
+        <p class="eyebrow">Table view</p>
+        <h2 id="county-list-title">County values</h2>
+        <p id="table-description">Select a state to review its counties in a table. The table is alphabetical and works with screen readers.</p>
+      </div>
+      <div class="table-wrap" tabindex="0" aria-labelledby="county-list-title" aria-describedby="table-description">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">County</th>
+              <th scope="col" id="value-column">Value</th>
+              <th scope="col" id="ci-column">Likely range (95%)</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="visually-hidden">Open details</span></th>
+            </tr>
+          </thead>
+          <tbody id="county-table-body">
+            <tr><td colspan="5" class="table-empty">Choose a state to fill this table.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="method-section" aria-labelledby="method-title">
+      <div>
+        <p class="eyebrow">Read the map carefully</p>
+        <h2 id="method-title">What this measure can and cannot tell you</h2>
+      </div>
+      <div class="method-copy">
+        <p id="interpretation-copy">These are county values for residents. They are not your personal cancer risk.</p>
+        <details>
+          <summary>Method and limitations</summary>
+          <p id="method-detail">People move. Cancers can develop over many years. Screening, the ages and backgrounds of residents, healthcare access and exposures can affect the values. Values adjusted for age help compare counties. They do not remove all differences. This map does not prove that living in a county causes cancer. It also does not prove that moving would change a person's risk.</p>
+        </details>
+        <details class="data-sources" id="data-sources">
+          <summary>Data sources: where every value comes from</summary>
+          <p class="data-sources__intro">Every measure comes from a public source. Open the links to check the values yourself.</p>
+          <p class="data-sources__intro">Privacy: this site does not ask for or store personal information. Saved priorities stay in your own browser. The web host counts visits and page views.</p>
+          <ul class="data-sources__list" id="data-sources-list" data-no-terms>
+            <li>Loading the source list…</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <div class="sr-announcer visually-hidden" id="announcer" aria-live="polite"></div>
+  </body>
+</html>

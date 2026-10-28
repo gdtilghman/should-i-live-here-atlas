@@ -1,0 +1,12 @@
+// Cloudflare Workers hosting for the atlas: static files only, no Worker script.
+// Only dist/ is served; scripts, docs and work/ are not uploaded.
+// Preview URLs stay off, so the site has one address only.
+{
+  "name": "should-i-live-here",
+  "compatibility_date": "2026-09-29",
+  "assets": {
+    "directory": "./dist"
+  },
+  "workers_dev": true,
+  "preview_urls": false
+}

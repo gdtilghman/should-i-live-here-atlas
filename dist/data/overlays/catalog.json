@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "retrieved": "2026-10-05",
+  "overlays": [
+    {
+      "id": "power",
+      "label": "Power plants & storage",
+      "file": "power.json",
+      "color": "#f6ca72",
+      "source": "US EIA-860M",
+      "sourceUrl": "https://www.eia.gov/electricity/data/eia860m/",
+      "period": "Preliminary August 2026 inventory; released September 24, 2026",
+      "defaultStatus": "Operating (OP)",
+      "relatedFamilies": [
+        "cancer",
+        "air",
+        "water",
+        "hazards",
+        "climate"
+      ],
+      "caveat": "EIA-tracked grid-connected facilities, generally at least 1 MW; not every rooftop system. One representative point per plant; mixed technologies/statuses retained. Type and status filters match the same generator record. Storage is not a fuel. A location is not an exposure, emission or historical operating record.",
+      "count": 18465,
+      "retrieved": "2026-10-05"
+    },
+    {
+      "id": "health",
+      "label": "Health-center service sites",
+      "file": "health.json",
+      "color": "#80d9bc",
+      "source": "HRSA health-center sites",
+      "sourceUrl": "https://data.hrsa.gov/topics/health-centers",
+      "period": "Directory snapshot 2026-10-05",
+      "relatedFamilies": [
+        "healthcare",
+        "places",
+        "cancer",
+        "community"
+      ],
+      "caveat": "Permanent and seasonal health-center service sites; excludes administrative-only and mobile-van base addresses. Not all clinics, hospitals or physicians. Listed service sites do not establish appointment availability, quality or individual access.",
+      "count": 16038,
+      "retrieved": "2026-10-05"
+    },
+    {
+      "id": "crashes",
+      "label": "Fatal road crashes (2023)",
+      "file": "crashes.json",
+      "color": "#ff9b85",
+      "source": "NHTSA FARS final file",
+      "sourceUrl": "https://www.nhtsa.gov/research-data/fatality-analysis-reporting-system-fars",
+      "period": "2023 events; final file",
+      "relatedFamilies": [
+        "traffic",
+        "community"
+      ],
+      "caveat": "Fatal crash locations, not all crashes or a forecast. No victim identities. This one-year point layer differs from the 2019–2023 county traffic rate. Counts are not adjusted for traffic volume or population.",
+      "count": 37459,
+      "retrieved": "2026-10-05"
+    },
+    {
+      "id": "quakes",
+      "label": "Earthquakes M3+ (2025)",
+      "file": "quakes.json",
+      "color": "#d7abef",
+      "source": "USGS earthquake catalog",
+      "sourceUrl": "https://earthquake.usgs.gov/fdsnws/event/1/",
+      "period": "2025 UTC events; retrieved 2026-10-05",
+      "relatedFamilies": [
+        "disasters",
+        "hazards"
+      ],
+      "caveat": "Epicenters within mapped lower-48 counties, magnitude at least 3. Not a complete history, damage footprint or future hazard estimate. Offshore events excluded; catalog locations and magnitudes can be revised.",
+      "count": 586,
+      "retrieved": "2026-10-05"
+    },
+    {
+      "id": "hospitals",
+      "label": "Hospitals & critical-access hospitals",
+      "file": "hospitals.json",
+      "color": "#57cbdc",
+      "source": "CMS Provider of Services via HRSA",
+      "sourceUrl": "https://data.hrsa.gov/data/data-sources",
+      "period": "Directory snapshot 2026-10-05",
+      "relatedFamilies": [
+        "healthcare",
+        "places",
+        "cancer",
+        "community"
+      ],
+      "caveat": "CMS-listed hospital facilities, including critical-access and specialty types; one point per CMS provider number. Not all care providers. Directory membership is not a live operating status, quality rating, capacity or travel-time estimate. Verify services with the facility.",
+      "count": 6594,
+      "retrieved": "2026-10-05"
+    },
+    {
+      "id": "epa",
+      "label": "EPA air, water & Superfund facilities",
+      "file": "epa.json",
+      "color": "#90bdf5",
+      "source": "EPA Facility Registry Service",
+      "sourceUrl": "https://www.epa.gov/frs/geospatial-data-download-service",
+      "period": "Registry snapshot 2026-10-05",
+      "relatedFamilies": [
+        "air",
+        "water",
+        "cancer",
+        "hazards",
+        "disasters"
+      ],
+      "caveat": "Facility program listings, not measured exposure or proof of violations. NPDES dischargers include industrial facilities and are not drinking-water service areas. One point per registry ID across included programs. Status is the source program status, not a claim that a facility is operating. Included categories are shown in the type filter.",
+      "count": 27686,
+      "retrieved": "2026-10-05"
+    },
+    {
+      "id": "tri",
+      "label": "TRI reporting facilities (2024)",
+      "file": "tri.json",
+      "color": "#ded49a",
+      "source": "EPA Toxics Release Inventory",
+      "sourceUrl": "https://www.epa.gov/toxics-release-inventory-tri-program/tri-basic-data-files-calendar-years-1987-present",
+      "period": "2024 reporting year; CSV retrieved 2026-10-20",
+      "relatedFamilies": [
+        "air",
+        "water",
+        "cancer",
+        "hazards"
+      ],
+      "caveat": "Facilities submitting 2024 TRI chemical reporting forms; industry and form filters match the same report. Limited sectors, chemicals and thresholds: not every pollution source. Reporting does not establish a release, violation, measured exposure, current operating status or individual health risk. Form A is not a zero-release measurement. Counts are facilities, not toxicity.",
+      "count": 21265,
+      "retrieved": "2026-10-20"
+    },
+    {
+      "id": "airmonitors",
+      "label": "Air-quality monitor sites",
+      "file": "airmonitors.json",
+      "color": "#b9e27a",
+      "source": "EPA Air Quality System monitors",
+      "sourceUrl": "https://aqs.epa.gov/aqsweb/airdata/download_files.html",
+      "relatedFamilies": [
+        "air",
+        "places"
+      ],
+      "caveat": "Sites with a PM2.5 or ozone sample in 2025 or later. One point per site; the type filter shows each pollutant. A monitor measures the air at its site. It is not a county average, a measured exposure or a health risk, and most counties have no monitor.",
+      "period": "Monitor list extracted 2026-06-26; retrieved 2026-10-28",
+      "count": 1677,
+      "retrieved": "2026-10-28"
+    },
+    {
+      "id": "stations",
+      "label": "Climate normals stations",
+      "file": "stations.json",
+      "color": "#e7a3c9",
+      "source": "NOAA US Climate Normals 1991–2020",
+      "sourceUrl": "https://www.ncei.noaa.gov/products/land-based-station/us-climate-normals",
+      "relatedFamilies": [
+        "climate",
+        "storms"
+      ],
+      "caveat": "Stations with 1991–2020 climate normals. The type is the observing network. Some stations report precipitation only. A station describes its own site, not the whole county; the county heat layer uses gridded data, not these stations.",
+      "period": "1991–2020 normals inventory; retrieved 2026-10-28",
+      "count": 15099,
+      "retrieved": "2026-10-28"
+    },
+    {
+      "id": "wildfires",
+      "label": "Wildfires 100+ acres (2025)",
+      "file": "wildfires.json",
+      "color": "#ff6f3c",
+      "source": "NIFC WFIGS incident locations",
+      "sourceUrl": "https://data-nifc.opendata.arcgis.com/datasets/nifc::wfigs-incident-locations/about",
+      "relatedFamilies": [
+        "wildfire",
+        "disasters"
+      ],
+      "caveat": "Wildfire incidents discovered in 2025 with a reported size of 100 acres or more. The point is where the fire started, not the area burned. Sizes can be revised. Smaller fires and prescribed burns are not shown. Not a forecast or a risk estimate.",
+      "period": "2025 discoveries; retrieved 2026-10-28",
+      "count": 1664,
+      "retrieved": "2026-10-28"
+    }
+  ]
+}
