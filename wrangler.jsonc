@@ -1,12 +1,17 @@
 // Cloudflare Workers hosting for the atlas: static files only, no Worker script.
 // Only dist/ is served; scripts, docs and work/ are not uploaded.
-// Preview URLs stay off, so the site has one address only.
+// Preview URLs stay off. The site serves shouldilivehere.org, its www name,
+// and the old workers.dev address.
 {
   "name": "should-i-live-here",
   "compatibility_date": "2026-09-29",
   "assets": {
     "directory": "./dist"
   },
+  "routes": [
+    { "pattern": "shouldilivehere.org", "custom_domain": true },
+    { "pattern": "www.shouldilivehere.org", "custom_domain": true }
+  ],
   "workers_dev": true,
   "preview_urls": false
 }

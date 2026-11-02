@@ -9,7 +9,7 @@ The atlas covers 3,107 counties in the lower 48 states. Alaska, Hawaii and
 the territories are not included. The atlas works
 at county level only. It has no ZIP-code or neighborhood data.
 
-**Example site:** https://should-i-live-here.davetilghman.workers.dev/
+**Example site:** https://shouldilivehere.org/
 
 <!-- TODO (owner): add a screenshot, for example docs/screenshot.png, and link it here. -->
 
