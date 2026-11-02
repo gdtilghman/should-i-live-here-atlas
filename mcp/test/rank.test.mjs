@@ -156,3 +156,23 @@ test('min_population leaves out small and unknown counties before ranking', { sk
   assert.throws(() => rankCounties(db, { measures: [{ key: 'cancer:001' }], min_population: -1 }), /min_population must be a whole number, 0 or more/);
   assert.throws(() => rankCounties(db, { measures: [{ key: 'cancer:001' }], min_population: 2.5 }), /min_population must be a whole number, 0 or more/);
 });
+
+test('ties are reported, with how many counties share each score', { skip }, () => {
+  const key = 'broadband:without-100-20';
+  const values = Object.values(layer(key).records).filter(x => x.status === 'available').map(x => x.value);
+  const zero = values.filter(v => v === 0).length;
+  assert.equal(zero, 113, 'reference: 113 counties report full 100/20 coverage');
+  const r = rankCounties(db, { measures: [{ key }], count: 10 });
+  for (const row of r.results) assert.equal(row.sharedBy, zero);
+  assert.deepEqual(r.topTie, { count: zero, concernScore: 0 });
+  assert.ok(r.cautions.includes('113 counties share the best score. Within a tie, the order is by FIPS code only.'));
+  assert.equal(r.cautions.at(-1), CAUTIONS.site, 'the site link stays last');
+  // A unique best score gives no tie caution and sharedBy 1.
+  const u = rankCounties(db, { measures: [
+    { key: 'broadband:without-100-20' }, { key: 'cancer:001' }, { key: 'crime:violent-crime' },
+    { key: 'crime:property-crime' }, { key: 'community:median-rent' },
+  ], count: 5 });
+  assert.equal(u.results[0].sharedBy, 1);
+  assert.equal(u.topTie, null);
+  assert.ok(!u.cautions.some(c => c.includes('share the best score')));
+});

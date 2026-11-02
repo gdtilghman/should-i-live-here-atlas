@@ -10,7 +10,7 @@ export const TOOL_NAMES = [
   'request_measure',
 ];
 
-const SCORE_NOTE = 'concernScore runs from 0 to 100. Lower means less of what you asked to avoid. Rank 1 has the lowest score.';
+const SCORE_NOTE = 'concernScore runs from 0 to 100. Lower means less of what you asked to avoid. Rank 1 has the lowest score. sharedBy counts the compared counties with exactly the same score.';
 const MISSING_NOTE_START = 'The atlas has no data for: ';
 const MISSING_NOTE_END = '. The request was counted, so the owner can consider adding it. No personal data was stored.';
 

@@ -28,7 +28,11 @@ export function crimeCaution(db) {
   return `The FBI advises against ranking places with these data. Crime data cover ${covered.toLocaleString('en-US')} of ${db.countyCount.toLocaleString('en-US')} counties.`;
 }
 
-export function cautionsFor(db, keys, { small = false, population = false } = {}) {
+export function tieCaution(count) {
+  return `${count.toLocaleString('en-US')} counties share the best score. Within a tie, the order is by FIPS code only.`;
+}
+
+export function cautionsFor(db, keys, { small = false, population = false, topTie = 0 } = {}) {
   const cautions = [CAUTIONS.county, CAUTIONS.missing];
   if (keys.some(k => k.startsWith('crime:'))) cautions.push(crimeCaution(db));
   if (keys.includes('community:median-rent') || keys.includes('community:median-home-value')) {
@@ -36,6 +40,7 @@ export function cautionsFor(db, keys, { small = false, population = false } = {}
   }
   if (small) cautions.push(CAUTIONS.small);
   if (population) cautions.push(CAUTIONS.population);
+  if (topTie > 1) cautions.push(tieCaution(topTie));
   cautions.push(CAUTIONS.site);
   return cautions;
 }
@@ -95,6 +100,10 @@ export function rankCounties(db, { measures, state, count, min_population: minPo
   const ranked = composite.rank(records, countyIds);
   const unranked = composite.unranked(records, countyIds);
 
+  // composite.rank breaks equal scores by FIPS, so a shared score needs saying.
+  const shared = new Map();
+  for (const row of ranked) shared.set(row.score, (shared.get(row.score) || 0) + 1);
+
   const byFips = countyMap(db);
   const results = ranked.slice(0, count ?? 10).map((row, i) => {
     const county = byFips.get(row.fips);
@@ -112,6 +121,7 @@ export function rankCounties(db, { measures, state, count, min_population: minPo
       state: county.stateName,
       population: county.population,
       concernScore: Math.round(row.score * 10) / 10,
+      sharedBy: shared.get(row.score),
       rankRange: [row.low, row.high],
       values,
     };
@@ -130,12 +140,15 @@ export function rankCounties(db, { measures, state, count, min_population: minPo
     };
   }
   const small = results.some(r => r.population !== null && r.population < SMALL_COUNTY);
+  const topCount = ranked.length ? shared.get(ranked[0].score) : 0;
+  const topTie = topCount > 1 ? { count: topCount, concernScore: Math.round(ranked[0].score * 10) / 10 } : null;
 
   return {
     results,
     compared: ranked.length,
     total: countyIds.length,
     leftOut,
-    cautions: cautionsFor(db, keys, { small, population: usePopulation }),
+    topTie,
+    cautions: cautionsFor(db, keys, { small, population: usePopulation, topTie: topCount }),
   };
 }
