@@ -1,4 +1,27 @@
-# Should I Live Here?
+<h1 align="center">Should I Live Here?</h1>
+
+<p align="center">
+  A free map of public federal data for the 3,107 counties of the lower 48 states.
+</p>
+
+<p align="center">
+  <a href="https://shouldilivehere.org/"><img alt="Live site" src="https://img.shields.io/badge/live-shouldilivehere.org-1f6feb?style=flat-square"></a>
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/code-Apache--2.0-blue?style=flat-square"></a>
+  <a href="LICENSE-DATA.md"><img alt="Data: CC BY 4.0" src="https://img.shields.io/badge/data-CC%20BY%204.0-green?style=flat-square"></a>
+  <a href="https://ko-fi.com/gdtilghman"><img alt="Support on Ko-fi" src="https://img.shields.io/badge/support-Ko--fi-FF5E5B?style=flat-square&logo=kofi&logoColor=white"></a>
+</p>
+
+<p align="center">
+  <a href="https://shouldilivehere.org/"><b>Open the atlas</b></a> ·
+  <a href="#data">Data sources</a> ·
+  <a href="#important-cautions">Cautions</a> ·
+  <a href="#run-it-locally">Run it locally</a> ·
+  <a href="CONTRIBUTING.md">Contribute</a>
+</p>
+
+<p align="center">
+  <a href="https://shouldilivehere.org/"><img src="docs/screenshot.png" alt="The atlas showing cancer incidence for every county in the lower 48 states, with the dataset controls on the left and county details on the right." width="100%"></a>
+</p>
 
 Should I Live Here? is a free, interactive data atlas of United States counties.
 It shows public federal data on a county map. You can compare health, hazards,
@@ -6,12 +29,8 @@ housing, jobs, internet access, air, water and road safety. You can also weight
 the measures that matter to you and see a combined score.
 
 The atlas covers 3,107 counties in the lower 48 states. Alaska, Hawaii and
-the territories are not included. The atlas works
-at county level only. It has no ZIP-code or neighborhood data.
-
-**Example site:** https://shouldilivehere.org/
-
-<!-- TODO (owner): add a screenshot, for example docs/screenshot.png, and link it here. -->
+the territories are not included. The atlas works at county level only. It has
+no ZIP-code or neighborhood data. It has no accounts or ads.
 
 ## What you can do
 
