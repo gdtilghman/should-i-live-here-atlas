@@ -48,9 +48,40 @@ no ZIP-code or neighborhood data. It has no accounts or ads.
 - Use the **Night view** button to switch from the default light "Weather
   Desk" look to a dark look. The site remembers your choice.
 
+## Ask an AI app
+
+The atlas has an MCP server, so AI apps such as Claude or ChatGPT can query
+the data. Add this address to your app as a remote MCP server (Streamable
+HTTP, no sign-in):
+
+```
+https://mcp.shouldilivehere.org/mcp
+```
+
+For Claude Code:
+
+```bash
+claude mcp add --transport http silh https://mcp.shouldilivehere.org/mcp
+```
+
+Then ask, for example: "Use the SILH MCP to find the 5 counties with the best
+internet access, the lowest cancer rates, the lowest crime and the lowest
+rent."
+
+The server has six read-only tools: `list_measures`, `find_measure`,
+`get_county`, `compare_counties`, `rank_counties` and `request_measure`.
+Rankings use the same scoring as **My priorities** on the site. Every answer
+includes the sources and cautions. The server never invents a value: a county
+with missing data is left out, never scored as low.
+
+When you ask for data the atlas does not have, for example schools, the
+server says so and counts the request. It stores the word and the day only. It
+never sees your prompt. [docs/mcp-design.md](docs/mcp-design.md) has the
+details. The code is in [mcp/](mcp/).
+
 ## Data
 
-The atlas has 66 county datasets in 13 families. Each layer shows its source,
+The atlas has 73 county measures in 15 families. Each layer shows its source,
 period and cautions in the app. [LICENSE-DATA.md](LICENSE-DATA.md) lists the
 full terms for each source. The `docs/*-source-audit.md` files record how each
 source was checked.
@@ -70,6 +101,8 @@ source was checked.
 | Drinking water | 1 | EPA ECHO SDWA data (SDWIS), 2023-2025 violations |
 | Traffic deaths | 1 | NHTSA FARS 2019-2023, with ACS population |
 | Heat (days at or above 95°F) | 1 | NOAA NCEI nClimGrid-Daily v1.0.0, 1991-2020 |
+| Severe storms | 5 | NOAA Storm Events Database, county reports, 2006-2025 |
+| Crime | 2 | FBI Uniform Crime Reporting, Return A, 2023-2025 average |
 
 County boundaries come from the US Census Bureau TIGER/Line 2021 county file,
 simplified with Mapshaper.

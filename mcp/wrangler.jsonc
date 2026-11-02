@@ -1,0 +1,17 @@
+// The MCP server for the atlas. A separate Worker from the static site.
+// Read-only, no sign-in. The account is on Workers Paid; the CPU cap below
+// stops a runaway request from running up cost.
+{
+  "name": "silh-mcp",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-15",
+  "rules": [{ "type": "Data", "globs": ["**/*.bin"], "fallthrough": false }],
+  "limits": { "cpu_ms": 1000 },
+  // Counts of requested measures the atlas lacks: term and day only.
+  "d1_databases": [
+    { "binding": "REQUESTS", "database_name": "silh-mcp-requests", "database_id": "57414f58-1f9f-46b2-ad45-15430c827c21" }
+  ],
+  "routes": [{ "pattern": "mcp.shouldilivehere.org", "custom_domain": true }],
+  "workers_dev": true,
+  "preview_urls": false
+}
