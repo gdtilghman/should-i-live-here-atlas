@@ -82,7 +82,7 @@ test('rank_counties answers the example query', { skip }, async () => {
   assert.equal(r.measures.length, 5);
   assert.deepEqual(Object.keys(r.measures[0]).sort(), ['citation', 'direction', 'key', 'label', 'note', 'period', 'sourceUrl', 'unit'].sort());
   assert.ok(r.cautions.includes(CAUTIONS.proxy));
-  assert.equal(r.scoreNote, 'concernScore runs from 0 to 100. Lower means less of what you asked to avoid. Rank 1 has the lowest score.');
+  assert.equal(r.scoreNote, 'concernScore runs from 0 to 100. Lower means less of what you asked to avoid. Rank 1 has the lowest score. sharedBy counts the compared counties with exactly the same score.');
   const bad = await h.rank_counties({ measures: [{ key: 'schools:best' }] });
   assert.match(bad.error, /Unknown measure: schools:best/);
 });
