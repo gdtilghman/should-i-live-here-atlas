@@ -45,10 +45,11 @@ exceed 10 ms. So a build script packs the data once:
   - `counties.json`: FIPS, name, state for 3,107 counties.
   - `measures.json`: per measure: id, family, title, unit, period, direction,
     source URL, citation, caution note.
-  - `values.bin`: one Float32 array per measure, 3,107 values, county order
+  - `values.bin`: one Float64 (little-endian) array per measure, 3,107 values, county order
     fixed. Missing or suppressed = NaN. A status code array keeps
     "unavailable", "suppressed" and "not applicable" apart (never zero).
-- 73 measures in 15 families x 3,107 counties x 4 bytes = about 0.9 MB.
+- 73 measures in 15 families x 3,107 counties x 8 bytes = about 1.8 MB.
+  64-bit values keep the exact layer values, so near-ties rank as on the site.
 - Ranking reuses the site's scoring rules in `dist/composite.js`, so the MCP
   and the site's **My priorities** give the same order for the same recipe.
 - A test fails if the packed data and the layer files disagree.

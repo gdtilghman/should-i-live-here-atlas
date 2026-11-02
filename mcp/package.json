@@ -1,0 +1,21 @@
+{
+  "name": "silh-mcp",
+  "private": true,
+  "version": "0.1.0",
+  "description": "MCP server for the Should I Live Here? county data atlas.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "node --test test/",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "agents": "0.32.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "wrangler": "4.156.2"
+  }
+}
