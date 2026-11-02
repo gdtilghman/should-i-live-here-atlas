@@ -64,6 +64,61 @@ For Claude Code:
 claude mcp add --transport http silh https://mcp.shouldilivehere.org/mcp
 ```
 
+Other apps (setup steps from each vendor's own documentation, November 2026):
+
+- **Claude (web, desktop and mobile):** Customize > Connectors > **+ Add** >
+  **Add custom connector**. Enter a name and the URL above, then choose
+  **No sign in**. Free plans allow one custom connector.
+  ([Anthropic help](https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp))
+- **Codex CLI:**
+
+  ```bash
+  codex mcp add silh --url https://mcp.shouldilivehere.org/mcp
+  ```
+
+  Or add `[mcp_servers.silh]` with `url = "https://mcp.shouldilivehere.org/mcp"`
+  to `~/.codex/config.toml`.
+  ([OpenAI docs](https://learn.chatgpt.com/docs/extend/mcp?surface=cli))
+- **ChatGPT (web):** Plugins > **+** > **Add custom MCP server**. Enter a name
+  and the URL above, with no authentication. Custom MCP servers are for
+  Business, Enterprise and Edu workspaces; an admin may need to allow them.
+  ([OpenAI help](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt))
+- **Cursor:** add this to `~/.cursor/mcp.json` (all projects) or
+  `.cursor/mcp.json` (one project):
+
+  ```json
+  { "mcpServers": { "silh": { "url": "https://mcp.shouldilivehere.org/mcp" } } }
+  ```
+
+  ([Cursor docs](https://cursor.com/docs/context/mcp))
+- **VS Code (GitHub Copilot):** run **MCP: Add Server** from the Command
+  Palette, or add this to `.vscode/mcp.json`:
+
+  ```json
+  { "servers": { "silh": { "type": "http", "url": "https://mcp.shouldilivehere.org/mcp" } } }
+  ```
+
+  ([VS Code docs](https://code.visualstudio.com/docs/copilot/reference/mcp-configuration))
+- **Gemini CLI:**
+
+  ```bash
+  gemini mcp add --transport http silh https://mcp.shouldilivehere.org/mcp
+  ```
+
+  ([Gemini CLI docs](https://geminicli.com/docs/tools/mcp-server/))
+- **Grok (web):** go to grok.com/connectors > **New Connector** > **Custom**,
+  and enter the URL above. ([xAI docs](https://docs.x.ai/grok/connectors))
+- **Grok Build CLI:**
+
+  ```bash
+  grok mcp add --transport http silh https://mcp.shouldilivehere.org/mcp
+  ```
+
+  ([xAI docs](https://docs.x.ai/build/features/mcp-servers))
+- **Meta Muse:** Meta's documentation shows no way to add an MCP server by
+  URL. Muse lists reviewed connectors, and can build a custom connector from a
+  service's API. ([Meta help](https://www.meta.com/help/artificial-intelligence/1687253048996149/))
+
 Then ask, for example: "Use the SILH MCP to find the 5 counties with the best
 internet access, the lowest cancer rates, the lowest crime and the lowest
 rent."
