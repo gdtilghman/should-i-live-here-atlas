@@ -199,5 +199,4 @@ change. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. In short:
 This project is free to use, with no ads. Donations keep the example site
 running and pay for data updates.
 
-- One-time gift: [Ko-fi](https://ko-fi.com/gdtilghman)
-- Monthly support: [GitHub Sponsors](https://github.com/sponsors/gdtilghman)
+Give on [Ko-fi](https://ko-fi.com/gdtilghman), one time or monthly.
