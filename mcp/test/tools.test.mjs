@@ -42,7 +42,7 @@ test('find_measure logs only what the atlas lacks', { skip }, async () => {
 test('get_county returns values with status, never invented', { skip }, async () => {
   const { h } = handlers();
   const r = await h.get_county({ county: 'Los Angeles, CA' });
-  assert.deepEqual(r.county, { fips: '06037', name: 'Los Angeles County', state: 'California' });
+  assert.deepEqual(r.county, { fips: '06037', name: 'Los Angeles County', state: 'California', population: 9848406 });
   assert.equal(r.values.length, 73);
   const crime = r.values.find(v => v.key === 'crime:violent-crime');
   const ref = layer('crime:violent-crime').records['06037'];

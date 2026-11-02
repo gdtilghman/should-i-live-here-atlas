@@ -70,7 +70,9 @@ rent."
 
 The server has six read-only tools: `list_measures`, `find_measure`,
 `get_county`, `compare_counties`, `rank_counties` and `request_measure`.
-Rankings use the same scoring as **My priorities** on the site. Every answer
+Rankings use the same scoring as **My priorities** on the site. A ranking can
+leave out small counties with `min_population` (Census ACS 2019-2023), because
+rates in small counties change a lot from year to year. Every answer
 includes the sources and cautions. The server never invents a value: a county
 with missing data is left out, never scored as low.
 

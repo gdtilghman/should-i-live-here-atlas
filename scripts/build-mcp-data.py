@@ -14,6 +14,10 @@ STATUS_CODES = [
 ]
 STATUS_TO_CODE = {status: i for i, status in enumerate(STATUS_CODES)}
 COUNTY_COUNT = 3107
+# County population comes from the traffic layer, which keeps the ACS
+# population it divides by (docs/traffic-source-audit.md).
+POPULATION_LAYER = "traffic-deaths-2019-2023.json"
+POPULATION_SOURCE = "US Census Bureau American Community Survey, 2019-2023 5-year estimates, table B01003"
 MEASURE_COUNT = 73
 
 
@@ -52,6 +56,11 @@ def main():
             }
         )
     county_rows.sort(key=lambda row: row["fips"])
+
+    population = load_json(layers_dir / POPULATION_LAYER)["records"]
+    for row in county_rows:
+        value = (population.get(row["fips"]) or {}).get("population")
+        row["population"] = value if is_finite_number(value) else None
 
     if len(county_rows) != COUNTY_COUNT:
         raise SystemExit(f"Expected {COUNTY_COUNT} counties, found {len(county_rows)}")
@@ -108,6 +117,7 @@ def main():
         "version": manifest["version"],
         "countyCount": COUNTY_COUNT,
         "statusCodes": STATUS_CODES,
+        "population": {"source": POPULATION_SOURCE, "from": "traffic:deaths-2019-2023"},
         "measures": measures,
     }
     with (out_dir / "measures.json").open("w", encoding="utf-8") as f:

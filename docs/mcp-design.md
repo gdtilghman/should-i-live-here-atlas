@@ -69,7 +69,9 @@ the caution notes for each measure it used.
 4. `compare_counties` - 2 to 10 counties side by side on chosen measures.
 5. `rank_counties` - the core tool. Inputs: measures with weights, optional
    limits (for example "unemployment under 5%"), optional state filter,
-   count (default 10, max 25). Output per county: rank, score 0-100, each
+   count (default 10, max 25), and `min_population` (off by default; uses the
+   ACS 2019-2023 population kept in the traffic layer, 3,099 of 3,107
+   counties). Output per county: rank, score 0-100, population, each
    measure value and its national percentile, and the counties left out
    because a value was missing.
 6. `request_measure` - the AI app can report a measure the user wanted that
@@ -94,6 +96,9 @@ the caution notes for each measure it used.
   these data." Crime covers 2,195 of 3,107 counties.
 - When rent or home value stands in for cost of living: "This is a proxy.
   It is not a full cost-of-living index."
+- When a result has fewer than 10,000 residents: "Some of these counties have
+  fewer than 10,000 residents. Rates in small counties can change a lot from
+  year to year."
 - Every answer ends with the site link, so people can check the values.
 
 ## Request log (missing measures)

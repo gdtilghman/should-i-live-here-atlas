@@ -5,7 +5,10 @@ export const CAUTIONS = Object.freeze({
   missing: 'Counties with missing data are left out, never scored as low.',
   proxy: 'Median rent and median home value are proxies. They are not a full cost-of-living index.',
   site: 'Check the values at https://shouldilivehere.org/',
+  small: 'Some of these counties have fewer than 10,000 residents. Rates in small counties can change a lot from year to year.',
+  population: 'Population: US Census Bureau American Community Survey, 2019-2023 5-year estimates, table B01003.',
 });
+const SMALL_COUNTY = 10000;
 
 // fips -> county, built once per db.
 const countyMaps = new WeakMap();
@@ -25,19 +28,21 @@ export function crimeCaution(db) {
   return `The FBI advises against ranking places with these data. Crime data cover ${covered.toLocaleString('en-US')} of ${db.countyCount.toLocaleString('en-US')} counties.`;
 }
 
-export function cautionsFor(db, keys) {
+export function cautionsFor(db, keys, { small = false, population = false } = {}) {
   const cautions = [CAUTIONS.county, CAUTIONS.missing];
   if (keys.some(k => k.startsWith('crime:'))) cautions.push(crimeCaution(db));
   if (keys.includes('community:median-rent') || keys.includes('community:median-home-value')) {
     cautions.push(CAUTIONS.proxy);
   }
+  if (small) cautions.push(CAUTIONS.small);
+  if (population) cautions.push(CAUTIONS.population);
   cautions.push(CAUTIONS.site);
   return cautions;
 }
 
 const isFiniteNumber = x => typeof x === 'number' && Number.isFinite(x);
 
-export function rankCounties(db, { measures, state, count } = {}) {
+export function rankCounties(db, { measures, state, count, min_population: minPopulation } = {}) {
   if (!Array.isArray(measures) || measures.length < 1 || measures.length > 10) {
     throw new Error('Give 1 to 10 measures.');
   }
@@ -59,15 +64,22 @@ export function rankCounties(db, { measures, state, count } = {}) {
     throw new Error('count must be 1 to 25.');
   }
 
+  if (minPopulation !== undefined && (!Number.isInteger(minPopulation) || minPopulation < 0)) {
+    throw new Error('min_population must be a whole number, 0 or more.');
+  }
+
   let stateFips = null;
   if (typeof state === 'string' && state !== '') {
     stateFips = db.stateFips(state);
     if (stateFips === null) throw new Error(`Unknown state: ${state}`);
   }
 
-  const wanted = stateFips === null ? null : stateFips;
-  const countyIds = db.counties
-    .filter(c => wanted === null || c.state === wanted)
+  const inState = db.counties.filter(c => stateFips === null || c.state === stateFips);
+  // Like the state filter, the population limit chooses which counties are
+  // compared. Scales and percentiles stay national.
+  const usePopulation = minPopulation !== undefined;
+  const countyIds = inState
+    .filter(c => !usePopulation || (c.population !== null && c.population >= minPopulation))
     .map(c => c.fips);
 
   const signals = measures.map(m => ({
@@ -98,21 +110,32 @@ export function rankCounties(db, { measures, state, count } = {}) {
       fips: row.fips,
       name: county.name,
       state: county.stateName,
+      population: county.population,
       concernScore: Math.round(row.score * 10) / 10,
       rankRange: [row.low, row.high],
       values,
     };
   });
 
+  const leftOut = {
+    missing: unranked.missing,
+    excluded: unranked.excluded,
+    byMeasure: unranked.inputs.map(x => ({ key: x.key, title: x.title, total: x.total })),
+  };
+  if (usePopulation) {
+    leftOut.population = {
+      min: minPopulation,
+      below: inState.filter(c => c.population !== null && c.population < minPopulation).length,
+      unknown: inState.filter(c => c.population === null).length,
+    };
+  }
+  const small = results.some(r => r.population !== null && r.population < SMALL_COUNTY);
+
   return {
     results,
     compared: ranked.length,
     total: countyIds.length,
-    leftOut: {
-      missing: unranked.missing,
-      excluded: unranked.excluded,
-      byMeasure: unranked.inputs.map(x => ({ key: x.key, title: x.title, total: x.total })),
-    },
-    cautions: cautionsFor(db, keys),
+    leftOut,
+    cautions: cautionsFor(db, keys, { small, population: usePopulation }),
   };
 }

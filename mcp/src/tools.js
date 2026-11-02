@@ -93,7 +93,7 @@ async function getCounty(db, args) {
   });
 
   return {
-    county: { fips: county.fips, name: county.name, state: county.stateName },
+    county: { fips: county.fips, name: county.name, state: county.stateName, population: county.population },
     values,
     cautions: [CAUTIONS.county, CAUTIONS.site],
   };
