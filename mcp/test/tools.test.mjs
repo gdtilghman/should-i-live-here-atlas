@@ -65,7 +65,8 @@ test('compare_counties sets counties side by side', { skip }, async () => {
   const r = await h.compare_counties({ counties: ['06037', 'Cook, IL'], measures: ['cancer:001', 'crime:violent-crime'] });
   assert.deepEqual(r.counties.map(c => c.fips), ['06037', '17031']);
   assert.equal(r.rows.length, 2);
-  assert.deepEqual(Object.keys(r.rows[0].values), ['06037', '17031']);
+  assert.deepEqual(r.rows[0].values.map(v => v.fips), ['06037', '17031']);
+  assert.deepEqual(Object.keys(r.rows[0].values[0]).sort(), ['fips', 'percentile', 'status', 'value']);
   assert.ok(r.cautions.some(c => c.startsWith('The FBI advises against ranking')));
   assert.match((await h.compare_counties({ counties: ['06037'], measures: ['cancer:001'] })).error, /2 to 10 counties/);
   assert.match((await h.compare_counties({ counties: ['06037', '17031'], measures: ['nope'] })).error, /Unknown measure: nope/);
