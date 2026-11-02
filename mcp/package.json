@@ -17,5 +17,10 @@
   },
   "devDependencies": {
     "wrangler": "4.156.2"
+  },
+  "allowScripts": {
+    "workerd@1.20261102.1": true,
+    "esbuild@0.28.2": true,
+    "core-js-pure": false
   }
 }
