@@ -9,7 +9,7 @@ The atlas covers 3,107 counties in the lower 48 states. Alaska, Hawaii and
 the territories are not included. The atlas works
 at county level only. It has no ZIP-code or neighborhood data.
 
-**Example site:** https://should-i-live-here.davetilghman.workers.dev/
+**Example site:** https://shouldilivehere.org/
 
 <!-- TODO (owner): add a screenshot, for example docs/screenshot.png, and link it here. -->
 
@@ -186,7 +186,8 @@ See [NOTICE](NOTICE) for the full attribution.
 
 ## Contributing
 
-Issues and pull requests are welcome. Please:
+Issues and pull requests are welcome. The owner reviews and merges every
+change. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. In short:
 
 - Use public sources only, and check their reuse terms first.
 - Keep missing values apart from zero.
@@ -195,7 +196,7 @@ Issues and pull requests are welcome. Please:
 
 ## Support
 
-This project is free to use. Later, it may accept donations to keep the example
-site running and to refresh the data.
+This project is free to use, with no ads. Donations keep the example site
+running and pay for data updates.
 
-<!-- TODO (owner): add a donation link here when one exists. -->
+Give on [Ko-fi](https://ko-fi.com/gdtilghman), one time or monthly.

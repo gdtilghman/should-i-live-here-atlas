@@ -1,6 +1,7 @@
 'use strict';
 // Cloudflare hosting must serve dist/ only, with no Worker script and no
-// preview URLs, so the workers.dev address is the only way in.
+// preview URLs. The site answers at shouldilivehere.org, its www name and
+// the workers.dev address, and nowhere else.
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -15,10 +16,14 @@ test('Cloudflare serves dist/ only, as static files', () => {
   assert.ok(!('main' in config), 'a Worker script would run code on every request');
 });
 
-test('only the workers.dev address exists', () => {
+test('only the custom domains and the workers.dev address exist', () => {
   assert.strictEqual(config.workers_dev, true);
-  assert.strictEqual(config.preview_urls, false, 'preview URLs would be a second address');
-  assert.ok(!config.routes && !config.route, 'no custom domain until one is bought');
+  assert.strictEqual(config.preview_urls, false, 'preview URLs would be another address');
+  assert.ok(!config.route, 'use routes, not route');
+  assert.deepStrictEqual(config.routes, [
+    { pattern: 'shouldilivehere.org', custom_domain: true },
+    { pattern: 'www.shouldilivehere.org', custom_domain: true },
+  ], 'a deploy replaces dashboard routes with these');
 });
 
 test('files the app never loads stay off the host', () => {
