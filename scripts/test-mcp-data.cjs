@@ -16,10 +16,14 @@ const STATUS = ['available', 'suppressed', 'unavailable', 'not-applicable', 'pol
 test('counties match the map file, in FIPS order', { skip }, () => {
   const counties = JSON.parse(fs.readFileSync(path.join(out, 'counties.json'), 'utf8'));
   const geo = read('dist/data/counties.qd.json');
-  const expected = geo.features.map(f => ({ fips: f.p[0], state: f.p[1], name: f.p[2], stateName: f.p[3] }))
+  const traffic = read('dist/data/layers/traffic-deaths-2019-2023.json').records;
+  const pop = fips => Number.isFinite(traffic[fips]?.population) ? traffic[fips].population : null;
+  const expected = geo.features.map(f => ({ fips: f.p[0], state: f.p[1], name: f.p[2], stateName: f.p[3], population: pop(f.p[0]) }))
     .sort((a, b) => a.fips < b.fips ? -1 : 1);
   assert.equal(counties.length, 3107);
   assert.deepEqual(counties, expected);
+  assert.equal(counties.filter(c => c.population === null).length, 8, 'the 8 legacy Connecticut counties');
+  assert.equal(counties.find(c => c.fips === '48377').population, 6043);
 });
 
 test('measures follow the manifest, with no extras', { skip }, () => {
@@ -28,6 +32,7 @@ test('measures follow the manifest, with no extras', { skip }, () => {
   assert.equal(packed.countyCount, 3107);
   assert.equal(packed.version, manifest.version);
   assert.deepEqual(packed.statusCodes, STATUS);
+  assert.deepEqual(packed.population, { source: 'US Census Bureau American Community Survey, 2019-2023 5-year estimates, table B01003', from: 'traffic:deaths-2019-2023' });
   const expected = [];
   for (const [family, entry] of Object.entries(manifest.families))
     for (const d of entry.datasets) expected.push({ family, d, entry });

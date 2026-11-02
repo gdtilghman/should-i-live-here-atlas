@@ -45,6 +45,7 @@ const TOOLS = {
       measures: z.array(measureInput).min(1).max(10),
       state: z.string().max(40).optional().describe('State name, postal code or 2-digit FIPS.'),
       count: z.number().int().min(1).max(25).optional().describe('How many counties to return. Default 10.'),
+      min_population: z.number().int().min(0).optional().describe('Leave out counties with fewer residents than this (Census ACS 2019-2023). Small counties have unstable rates; 10000 or more is a common choice.'),
     }),
   },
   request_measure: {
