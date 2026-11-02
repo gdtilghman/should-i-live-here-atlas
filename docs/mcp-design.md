@@ -30,9 +30,10 @@ ranks, sources and cautions from the atlas. It never invents a value.
   `package.json`.
 - Built with `createMcpHandler` from the Cloudflare Agents SDK and
   `@modelcontextprotocol/server` (stateless: no sessions, no Durable Objects).
-- Workers Free plan. Limits that matter:
-  - 100,000 requests a day. Over that, requests fail with an error. No bill.
-  - **10 ms of CPU time per request.** This drives the data design below.
+- The account is on Workers Paid ($5 a month, already in place; renews
+  December 1, 2026). One ranking takes about 25 ms of CPU, over the free
+  plan's 10 ms but far under the paid default. `limits.cpu_ms` is set to
+  1000 so a runaway request cannot run up cost.
 - Deploys through Workers Builds on a push to `master`, like the site.
 
 ## Data design
@@ -50,8 +51,8 @@ exceed 10 ms. So a build script packs the data once:
     "unavailable", "suppressed" and "not applicable" apart (never zero).
 - 73 measures in 15 families x 3,107 counties x 8 bytes = about 1.8 MB.
   64-bit values keep the exact layer values, so near-ties rank as on the site.
-- Ranking reuses the site's scoring rules in `dist/composite.js`, so the MCP
-  and the site's **My priorities** give the same order for the same recipe.
+- Ranking calls the site's `dist/composite.js` unchanged, so the MCP and the
+  site's **My priorities** give the same order for the same recipe.
 - A test fails if the packed data and the layer files disagree.
 
 ## Tools
@@ -111,10 +112,10 @@ the caution notes for each measure it used.
 
 ## Abuse and cost controls
 
-- Free plan only. No paid plan, no card change.
+- Runs on the existing Workers Paid plan. No new paid service.
 - Inputs are validated (lengths, counts, known measure ids).
 - `rank_counties` count max 25; `compare_counties` max 10 counties.
-- CPU checked in tests against a budget of 5 ms per call on the packed data.
+- A test fails if one ranking takes over 60 ms on the dev machine.
 
 ## Acceptance criteria
 

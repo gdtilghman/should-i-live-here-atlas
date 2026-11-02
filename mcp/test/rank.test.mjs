@@ -110,7 +110,7 @@ test('bad input is refused with a clear message', { skip }, () => {
   assert.equal(rankCounties(db, { measures: [{ key: 'cancer:001' }] }).results.length, 10, 'count defaults to 10');
 });
 
-test('one ranking stays inside the free plan CPU budget', { skip }, () => {
+test('one ranking stays fast (Workers Paid, 1 s CPU cap)', { skip }, () => {
   const inputs = { measures: [
     { key: 'broadband:without-100-20' }, { key: 'cancer:001' }, { key: 'crime:violent-crime' },
     { key: 'crime:property-crime' }, { key: 'community:median-rent' },
@@ -119,5 +119,5 @@ test('one ranking stays inside the free plan CPU budget', { skip }, () => {
   const t = process.hrtime.bigint();
   for (let i = 0; i < 5; i++) rankCounties(db, inputs);
   const ms = Number(process.hrtime.bigint() - t) / 1e6 / 5;
-  assert.ok(ms < 25, `${ms.toFixed(1)} ms per ranking on this machine`);
+  assert.ok(ms < 60, `${ms.toFixed(1)} ms per ranking on this machine`);
 });

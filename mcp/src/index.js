@@ -19,7 +19,7 @@ const measureInput = z.object({
   key: z.string().describe('Measure key from list_measures or find_measure, for example "crime:violent-crime".'),
   weight: z.number().min(0).optional().describe('Relative importance. Default 1.'),
   max: z.number().optional().describe('Leave out counties above this raw value.'),
-  min: z.number().optional().describe('Leave out counties below this raw value.'),
+  min: z.number().optional().describe('Leave out counties below this raw value. Ignored when max is also given.'),
 });
 
 const TOOLS = {

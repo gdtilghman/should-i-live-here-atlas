@@ -1,10 +1,12 @@
 // The MCP server for the atlas. A separate Worker from the static site.
-// Read-only, no sign-in. The free plan caps requests and CPU; it never bills.
+// Read-only, no sign-in. The account is on Workers Paid; the CPU cap below
+// stops a runaway request from running up cost.
 {
   "name": "silh-mcp",
   "main": "src/index.js",
   "compatibility_date": "2026-10-15",
   "rules": [{ "type": "Data", "globs": ["**/*.bin"], "fallthrough": false }],
+  "limits": { "cpu_ms": 1000 },
   "workers_dev": true,
   "preview_urls": false
 }
