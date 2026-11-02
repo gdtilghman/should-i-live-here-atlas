@@ -186,7 +186,8 @@ See [NOTICE](NOTICE) for the full attribution.
 
 ## Contributing
 
-Issues and pull requests are welcome. Please:
+Issues and pull requests are welcome. The owner reviews and merges every
+change. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. In short:
 
 - Use public sources only, and check their reuse terms first.
 - Keep missing values apart from zero.
@@ -195,7 +196,8 @@ Issues and pull requests are welcome. Please:
 
 ## Support
 
-This project is free to use. Later, it may accept donations to keep the example
-site running and to refresh the data.
+This project is free to use, with no ads. Donations keep the example site
+running and pay for data updates.
 
-<!-- TODO (owner): add a donation link here when one exists. -->
+- One-time gift: [Ko-fi](https://ko-fi.com/gdtilghman)
+- Monthly support: [GitHub Sponsors](https://github.com/sponsors/gdtilghman)

@@ -149,6 +149,7 @@ a { color: inherit; }
   color: inherit;
   font-weight: 650;
 }
+a.quiet-button { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 .icon-button { width: 44px; padding: 0; font-size: 1.5rem; line-height: 1; }
 .controls-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: .8rem; }
 .control-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .7rem; }
