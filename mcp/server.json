@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.gdtilghman/should-i-live-here",
+  "title": "Should I Live Here?",
+  "description": "Rank and compare US counties on health, hazards, crime, rent, internet and air, from public data.",
+  "version": "0.1.0",
+  "websiteUrl": "https://shouldilivehere.org/",
+  "repository": {
+    "url": "https://github.com/gdtilghman/should-i-live-here-atlas",
+    "source": "github",
+    "subfolder": "mcp"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.shouldilivehere.org/mcp"
+    }
+  ]
+}
