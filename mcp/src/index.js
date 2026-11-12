@@ -28,7 +28,7 @@ const TOOLS = {
     inputSchema: z.object({ filter: z.string().max(60).optional() }),
   },
   find_measure: {
-    description: 'Map plain words (for example "internet", "cancer", "crime", "cost of living") to atlas measure keys. Words the atlas has no data for come back in not_available. Those words are counted (word and day only, no personal data) so the owner can consider new data.',
+    description: 'Map plain words (for example "internet", "cancer", "crime", "cost of living") to atlas measure keys. Words the atlas has no data for come back in not_available. Those words are counted (word, day and app name only, no personal data) so the owner can consider new data.',
     inputSchema: z.object({ terms: z.array(z.string().max(60)).min(1).max(10) }),
   },
   get_county: {
@@ -49,15 +49,24 @@ const TOOLS = {
     }),
   },
   request_measure: {
-    description: 'Report a measure a user wanted that the atlas lacks, for example "schools". Only the measure name and the day are counted.',
+    description: 'Report a measure a user wanted that the atlas lacks, for example "schools". Only the measure name, the day and the app name are counted.',
     inputSchema: z.object({ measure: z.string().max(60), reason: z.string().max(200).optional() }),
   },
 };
 
-function createServer(env) {
+// Logging runs in ctx.waitUntil, so it never delays or fails the answer.
+function missingLogger(env, request, ctx) {
+  const ua = request.headers.get('user-agent') || '';
+  return terms => {
+    const write = logMissing(env?.REQUESTS, terms, { ua }).catch(() => 0);
+    if (ctx?.waitUntil) ctx.waitUntil(write);
+  };
+}
+
+function createServer(env, request, ctx) {
   const server = new McpServer({ name: 'should-i-live-here', version: '0.1.0' },
     { instructions: `County data for the 3,107 counties of the lower 48 states, from public federal sources. County level only. Always pass on the cautions in each answer, and link to ${SITE} so people can check the values.` });
-  const handlers = createHandlers(db, { logMissing: terms => logMissing(env?.REQUESTS, terms) });
+  const handlers = createHandlers(db, { logMissing: missingLogger(env, request, ctx) });
   for (const [name, config] of Object.entries(TOOLS)) {
     server.registerTool(name, { ...config, annotations: READ_ONLY }, async args => {
       const result = await handlers[name](args || {});
@@ -70,7 +79,7 @@ function createServer(env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (url.pathname === '/mcp') return createMcpHandler(() => createServer(env))(request, env, ctx);
+    if (url.pathname === '/mcp') return createMcpHandler(() => createServer(env, request, ctx))(request, env, ctx);
     if (url.pathname === '/') {
       return new Response(`Should I Live Here? MCP server\n\nAdd this URL to your AI app: ${url.origin}/mcp\nThe atlas: ${SITE}\nCode: https://github.com/gdtilghman/should-i-live-here-atlas\n`,
         { headers: { 'content-type': 'text/plain; charset=utf-8' } });

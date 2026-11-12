@@ -7,7 +7,8 @@
   "compatibility_date": "2026-10-15",
   "rules": [{ "type": "Data", "globs": ["**/*.bin"], "fallthrough": false }],
   "limits": { "cpu_ms": 1000 },
-  // Counts of requested measures the atlas lacks: term and day only.
+  // Counts of requested measures the atlas lacks: term, day and client app name.
+  // Schema changes: migrations/ (npx wrangler d1 migrations apply silh-mcp-requests --remote).
   "d1_databases": [
     { "binding": "REQUESTS", "database_name": "silh-mcp-requests", "database_id": "57414f58-1f9f-46b2-ad45-15430c827c21" }
   ],

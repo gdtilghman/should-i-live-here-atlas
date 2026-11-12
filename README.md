@@ -132,7 +132,8 @@ includes the sources and cautions. The server never invents a value: a county
 with missing data is left out, never scored as low.
 
 When you ask for data the atlas does not have, for example schools, the
-server says so and counts the request. It stores the word and the day only. It
+server says so and counts the request. It stores the word, the day and the name of the
+AI app (for example Claude-User) only. It
 never sees your prompt. [docs/mcp-design.md](docs/mcp-design.md) has the
 details. The code is in [mcp/](mcp/).
 
