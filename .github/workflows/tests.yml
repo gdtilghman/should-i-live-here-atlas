@@ -1,0 +1,33 @@
+# Runs the site and MCP server tests on every pull request to master.
+# The "Protect master" ruleset requires this check before a merge.
+name: tests
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Site tests
+        run: node --test scripts/test-*.cjs
+      - name: MCP install
+        working-directory: mcp
+        run: npm ci --no-audit --no-fund
+      - name: MCP tests
+        working-directory: mcp
+        run: npm test
+      - name: MCP build check
+        working-directory: mcp
+        run: npx wrangler deploy --dry-run --outdir "$RUNNER_TEMP/silh-mcp"
