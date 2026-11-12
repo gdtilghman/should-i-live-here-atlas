@@ -108,7 +108,14 @@ the caution notes for each measure it used.
   logging fails quietly and the answer still returns).
 - Stored per row: the requested term (lowercase, max 60 characters), the
   date (day only) and a count. Nothing else.
-- Not stored: the user's prompt, IP address, user agent, or any identifier.
+- A second table, missing_request_clients (migration 0001), adds the client
+  app name: the first user-agent product token (for example "Claude-User",
+  max 80 characters) and a kind ("probe", "agent" or "unknown"). Every term
+  goes there. missing_requests gets only terms that pass
+  mcp/src/missingFilter.js: not from a known probe and not a placeholder
+  word such as "audit-fixture".
+- Not stored: the user's prompt, IP address, full user-agent string, or any
+  identifier.
   The MCP server never sees the prompt; it sees only tool inputs.
 - The site's privacy note and the server's tool descriptions say that
   missing-measure requests are counted.
