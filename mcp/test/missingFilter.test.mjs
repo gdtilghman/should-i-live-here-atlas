@@ -40,6 +40,11 @@ test('AI apps and plain HTTP clients are not probes', () => {
   assert.equal(isProbeClient(null), false);
 });
 
+test('generic research and monitor words mark probes', () => {
+  assert.equal(isProbeClient('mcp-ad-measurement/1.0'), true);
+  assert.equal(isProbeClient('Claude-User'), false);
+});
+
 test('placeholder and test terms are junk', () => {
   for (const term of [
     'audit-fixture', 'test fixture', 'dummy measure', 'placeholder', 'lorem ipsum',

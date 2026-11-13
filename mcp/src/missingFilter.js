@@ -7,7 +7,12 @@ const PROBE_NAMES = [
   'agentrankprobe', 'annalistchecks', 'histor/', 'mcptry.com', 'pulsefeed',
   'brickbluebot', 'moonglade', 'lowdown-scanner', 'factanker',
 ];
-const PROBE_WORDS = ['probe', 'prober', 'scanner', 'crawler', 'liveness', 'health'];
+const PROBE_WORDS = [
+  'probe', 'prober', 'scanner', 'crawler', 'liveness', 'health',
+  'measure', 'measurement', 'research', 'survey', 'census', 'audit', 'index',
+  'registry', 'catalog', 'directory', 'observatory', 'monitor', 'uptime',
+  'status', 'verif', 'check', 'inspector', 'discover', 'harvest', 'collector',
+];
 
 const JUNK_PARTS = ['fixture', 'dummy', 'placeholder', 'lorem'];
 // "foo" and "bar" count only as whole words, so "food access" and
